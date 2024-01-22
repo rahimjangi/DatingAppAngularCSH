@@ -1,17 +1,15 @@
-using API.Data;
-using Microsoft.EntityFrameworkCore;
+using API.Extentions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("default"));
-});
+// Service extention class
+builder.Services.AddApplicationServices(builder.Configuration);
 
-builder.Services.AddCors();
+//Identity extention class
+builder.Services.AddIdentityServices(builder.Configuration);
 
 
 var app = builder.Build();
@@ -26,6 +24,7 @@ app.UseCors(builder =>
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
