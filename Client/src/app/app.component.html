@@ -1,12 +1,8 @@
-<carousel>
-  <slide *ngFor="let img of images">
-    <img src={{img}} alt="first slide" style="display: block; width: 100%;">
-  </slide>
-</carousel>
-{{title}}
-
-<ul>
-  <li *ngFor="let user of users">
-    {{user.id}}-{{user.userName}}
-  </li>
-</ul>
+<app-nav></app-nav>
+<div class="container">
+  <ul>
+    <li *ngFor="let user of users">
+      {{user.id}}-{{user.userName}}
+    </li>
+  </ul>
+</div>
