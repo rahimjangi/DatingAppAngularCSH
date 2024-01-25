@@ -33,5 +33,6 @@ export class NavComponent {
 
   logout() {
     this.loggedIn = false;
+    this.accountService.logout();
   }
 }
