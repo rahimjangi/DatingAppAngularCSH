@@ -1,5 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { AccountService } from './_services/account.service';
+import { User } from './_models/user';
 
 @Component({
   selector: 'app-root',
@@ -9,19 +11,27 @@ import { Component, OnInit } from '@angular/core';
 export class AppComponent implements OnInit {
   title = 'Client';
   users: any;
-  images = [
-    'https://valor-software.com/ngx-bootstrap/assets/images/nature/1.jpg',
-    'https://valor-software.com/ngx-bootstrap/assets/images/nature/2.jpg',
-    'https://valor-software.com/ngx-bootstrap/assets/images/nature/3.jpg',
-  ];
-  token =
-    'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJodXNoaTEiLCJuYmYiOjE3MDU5NDUwMTAsImV4cCI6MTcwNjAzMTQxMCwiaWF0IjoxNzA1OTQ1MDEwfQ.WgnSPb9wJMIqessdHpApZNNtiRqoykmbM7IwDSuSX_OHJoYxJ6tegt7A_pS3r5-74WwAVRZSVZl05MhGBQMR-Q'; // Replace with actual token retrieval method
-  headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private accountService: AccountService
+  ) {}
   ngOnInit(): void {
+    this.setCurrentUser();
+    this.getUsers();
+  }
+  getUsers() {
+    let token: any = '';
+    this.accountService.currentUser$.subscribe({
+      next: (user) => {
+        token = user?.token;
+      },
+      error: (err) => console.log(err),
+    });
+    console.log(token);
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     this.http
-      .get('https://localhost:5001/api/users', { headers: this.headers })
+      .get('https://localhost:5001/api/users', { headers: headers })
       .subscribe({
         next: (response) => {
           this.users = response;
@@ -29,5 +39,11 @@ export class AppComponent implements OnInit {
         error: (err) => console.log(err),
         complete: () => {},
       });
+  }
+  setCurrentUser() {
+    const userString = localStorage.getItem('user');
+    if (!userString) return;
+    const user: User = JSON.parse(userString);
+    this.accountService.setCurrentUser(user);
   }
 }
